@@ -10,6 +10,8 @@ contract PetRockFactory {
     IERC20 private wBTC = IERC20(wBtcAddr);
     uint256 exchangeValue = 0;
 
+    uint id;
+
     struct PetRock {
         string name;
     }
@@ -26,6 +28,7 @@ contract PetRockFactory {
     
     constructor() {
         god = msg.sender;
+        id = 0;
     }
 
     function getAllowance() public view returns(uint256) {
@@ -38,7 +41,7 @@ contract PetRockFactory {
         require(allowance >= exchangeValue, "You need to check token allowance");
         wBTC.transferFrom(msg.sender, address(this), _amount);
         
-        uint id = petrocks.length;
+        id = petrocks.length;
         petrocks.push(PetRock(_name));
         petrockToOwner[id] = msg.sender;
         ownerPetrockCount[msg.sender]++;
