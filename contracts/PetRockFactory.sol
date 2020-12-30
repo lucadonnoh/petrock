@@ -5,7 +5,7 @@ import "../interfaces/IERC20.sol";
 
 contract PetRockFactory {
 
-    address private owner;
+    address private god;
     address private wBtcAddr = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
     IERC20 private wBTC = IERC20(wBtcAddr);
     uint256 exchangeValue = 0;
@@ -18,9 +18,14 @@ contract PetRockFactory {
 
     mapping(uint => address) petrockToOwner;
     mapping(address => uint) ownerPetrockCount;
+
+    modifier onlyGod() {
+        require(msg.sender == god);
+        _;
+    }
     
     constructor() {
-        owner = msg.sender;
+        god = msg.sender;
     }
 
     function getAllowance() public view returns(uint256) {
