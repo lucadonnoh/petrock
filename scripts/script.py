@@ -1,3 +1,4 @@
-from brownie import PetRock, accounts
+from brownie import PetRockFactory, accounts
 
 def main():
+    return
