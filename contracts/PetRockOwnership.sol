@@ -155,7 +155,7 @@ contract PetRockOwnership is IERC721, PetRockFactory {
     function setApprovalForAll(address operator, bool _approved) external override {
         require(operator != _msgSender(), "Can't approve yourself");
         operatorApprovals[_msgSender()][operator] = _approved;
-        emit Approval(_msgSender(), operator, _approved);
+        emit ApprovalForAll(_msgSender(), operator, _approved);
     }
 
 }
