@@ -1,22 +1,26 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0 <0.8.0;
-import "../@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "../@openzeppelin/contracts/math/SafeMath.sol";
+import "./@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "./@openzeppelin/contracts/math/SafeMath.sol";
+import "./@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "./@openzeppelin/contracts/utils/Address.sol";
 import "./PetRockFactory.sol";
 
 contract PetRockOwnership is IERC721, PetRockFactory {
     using SafeMath for uint256;
+    using Address for address;
+    bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
 
     mapping(uint256 => address) petrockApprovals;
 
     constructor() {}
 
-    function balanceOf(address owner) external view returns (uint256 balance) {
+    function balanceOf(address owner) external view override returns (uint256 balance) {
         return ownerPetrockCount[owner];
     }
 
-    function ownerOf(uint256 id) external view returns (address owner) {
+    function ownerOf(uint256 id) external view override returns (address owner) {
         return petrockToOwner[id];
     }
 
@@ -32,11 +36,15 @@ contract PetRockOwnership is IERC721, PetRockFactory {
         Transfer(_from, _to, _tokenId);
     }
 
+    function _isApprovedOrOwner(address _addr, uint256 _tokenId) private returns(bool) {
+        return (petrockToOwner[_tokenId] == _addr || petrockApprovals[_tokenId] == _addr);
+    }
+
     function transferFrom(
         address _from,
         address _to,
         uint256 _tokenId
-    ) external payable {
+    ) external override {
         require(
             _from != address(0),
             "The from address can't be the zero address"
@@ -47,20 +55,85 @@ contract PetRockOwnership is IERC721, PetRockFactory {
             "The from address doesn't own the token"
         );
         require(
-            _from == msg.sender || petrockApprovals[_tokenId] == msg.sender,
+            _from == _msgSender() || petrockApprovals[_tokenId] == _msgSender(),
             "You can't transfer the token, check if you own it or you are approved"
         );
         _transfer(_from, _to, _tokenId);
     }
 
-    function approve(address _to, uint256 _tokenId) external {
+    function approve(address _to, uint256 _tokenId) external override {
         require(_tokenId < id, "The token doesn't exist");
         require(
-            petrockToOwner[_tokenId] == msg.sender ||
-                petrockApprovals[_tokenId] == msg.sender,
+            petrockToOwner[_tokenId] == _msgSender() ||
+                petrockApprovals[_tokenId] == _msgSender(),
             "You're not allowed to approve this token"
         );
         petrockApprovals[_tokenId] = _to;
-        Approval(msg.sender, _to, _tokenId);
     }
+
+    function _safeTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) internal virtual {
+        _transfer(from, to, tokenId);
+        require(
+            _checkOnERC721Received(from, to, tokenId, _data),
+            "ERC721: transfer to non ERC721Receiver implementer"
+        );
+    }
+
+    /**
+     * @dev See {IERC721-safeTransferFrom}.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public virtual override {
+        safeTransferFrom(from, to, tokenId, "");
+    }
+
+    /**
+     * @dev See {IERC721-safeTransferFrom}.
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) public virtual override {
+        require(
+            _isApprovedOrOwner(_msgSender(), tokenId),
+            "ERC721: transfer caller is not owner nor approved"
+        );
+        _safeTransfer(from, to, tokenId, _data);
+    }
+
+    function _checkOnERC721Received(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory _data
+    ) private returns (bool) {
+        if (!to.isContract()) {
+            return true;
+        }
+        bytes memory returndata =
+            to.functionCall(
+                abi.encodeWithSelector(
+                    IERC721Receiver(to).onERC721Received.selector,
+                    _msgSender(),
+                    from,
+                    tokenId,
+                    _data
+                ),
+                "ERC721: transfer to non ERC721Receiver implementer"
+            );
+        bytes4 retval = abi.decode(returndata, (bytes4));
+        return (retval == _ERC721_RECEIVED);
+    }
+
+    
 }

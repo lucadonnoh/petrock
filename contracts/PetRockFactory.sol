@@ -1,9 +1,10 @@
 //SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.7.0;
 
-import "../interfaces/IERC20.sol";
+import "./@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./@openzeppelin/contracts/GSN/Context.sol";
 
-contract PetRockFactory {
+contract PetRockFactory is Context {
 
     address private god;
     address private wBtcAddr = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
@@ -22,28 +23,28 @@ contract PetRockFactory {
     mapping(address => uint) ownerPetrockCount;
 
     modifier onlyGod() {
-        require(msg.sender == god);
+        require(_msgSender() == god);
         _;
     }
     
     constructor() {
-        god = msg.sender;
+        god = _msgSender();
         id = 0;
     }
 
     function getAllowance() public view returns(uint256) {
-        return wBTC.allowance(msg.sender, address(this)); 
+        return wBTC.allowance(_msgSender(), address(this)); 
     }
     
     function createPetRock(string memory _name, uint256 _amount) public {
         require(_amount == exchangeValue, "You need to send 1 fungible pet rock");
-        uint256 allowance = wBTC.allowance(msg.sender, address(this));
+        uint256 allowance = wBTC.allowance(_msgSender(), address(this));
         require(allowance >= exchangeValue, "You need to check token allowance");
-        wBTC.transferFrom(msg.sender, address(this), _amount);
+        wBTC.transferFrom(_msgSender(), address(this), _amount);
         
         id = petrocks.length;
         petrocks.push(PetRock(_name));
-        petrockToOwner[id] = msg.sender;
-        ownerPetrockCount[msg.sender]++;
+        petrockToOwner[id] = _msgSender();
+        ownerPetrockCount[_msgSender()]++;
     }
 }
