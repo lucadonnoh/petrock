@@ -39,8 +39,8 @@ contract PetRockOwnership is IERC721, PetRockFactory {
 
     function _isApprovedOrOwner(address spender, uint256 tokenId) internal view returns (bool) {
         require(_exists(tokenId), "ERC721: operator query for nonexistent token");
-        address owner = ownerOf(tokenId);
-        return (spender == owner || getApproved(tokenId) == spender || isApprovedForAll(owner, spender));
+        address owner = this.ownerOf(tokenId);
+        return (spender == owner || this.getApproved(tokenId) == spender || this.isApprovedForAll(owner, spender));
     }
 
     function transferFrom(
@@ -64,11 +64,11 @@ contract PetRockOwnership is IERC721, PetRockFactory {
         _transfer(_from, _to, _tokenId);
     }
 
-    function _exists(address _tokenId) public view override returns(bool) {
+    function _exists(uint256 _tokenId) public view returns(bool) {
         return (_tokenId < _totalSupply());
     }
 
-    function _totalSupply() public view override returns (uint256) {
+    function _totalSupply() public view returns (uint256) {
         return petrocks.length;
     }
 
@@ -152,10 +152,10 @@ contract PetRockOwnership is IERC721, PetRockFactory {
         return petrockApprovals[_tokenId];
     }
 
-    function setApprovalForAll(address operator, bool _approved) external {
+    function setApprovalForAll(address operator, bool _approved) external override {
         require(operator != _msgSender(), "Can't approve yourself");
-        operatorApprovals[_msgSender()][operator] = true;
-        emit Approval(owner, spender, value);
+        operatorApprovals[_msgSender()][operator] = _approved;
+        emit Approval(_msgSender(), operator, _approved);
     }
 
 }
