@@ -61,5 +61,6 @@ contract PetRockOwnership is IERC721, PetRockFactory {
             "You're not allowed to approve this token"
         );
         petrockApprovals[_tokenId] = _to;
+        Approval(msg.sender, _to, _tokenId);
     }
 }
