@@ -29,6 +29,12 @@ contract PetRockNFT is ERC721 {
         petrockTokenURI = "";
     }
 
+    event msgSenderEvent(address indexed sender);
+
+    function msgSender() public {
+        emit msgSenderEvent(_msgSender());
+    }
+
     function mintNewPetRock(address _to, string memory _name, uint256 _amount) public {
         require(_amount == exchangeValue, "You need to send 1 fungible pet rock");
         uint256 allowance = wBTC.allowance(_msgSender(), address(this));
