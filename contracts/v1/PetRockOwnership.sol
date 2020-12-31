@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0 <0.8.0;
-import "./@openzeppelin/contracts/token/ERC721/IERC721.sol";
-import "./@openzeppelin/contracts/math/SafeMath.sol";
-import "./@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "./@openzeppelin/contracts/utils/Address.sol";
-import "./@openzeppelin/contracts/introspection/ERC165.sol";
+import "../@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "../@openzeppelin/contracts/math/SafeMath.sol";
+import "../@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
+import "../@openzeppelin/contracts/utils/Address.sol";
+import "../@openzeppelin/contracts/introspection/ERC165.sol";
 import "./PetRockFactory.sol";
 
 contract PetRockOwnership is IERC721, ERC165, PetRockFactory {
