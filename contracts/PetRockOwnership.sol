@@ -5,9 +5,10 @@ import "./@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "./@openzeppelin/contracts/math/SafeMath.sol";
 import "./@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "./@openzeppelin/contracts/utils/Address.sol";
+import "./@openzeppelin/contracts/introspection/ERC165.sol";
 import "./PetRockFactory.sol";
 
-contract PetRockOwnership is IERC721, PetRockFactory {
+contract PetRockOwnership is IERC721, ERC165, PetRockFactory {
     using SafeMath for uint256;
     using Address for address;
     bytes4 private constant _ERC721_RECEIVED = 0x150b7a02;
@@ -161,5 +162,7 @@ contract PetRockOwnership is IERC721, PetRockFactory {
     function isApprovedForAll(address owner, address operator) external view override returns (bool) {
         return operatorApprovals[owner][operator];
     }
+
+
 
 }
