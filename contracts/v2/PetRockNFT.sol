@@ -7,8 +7,9 @@ import "../@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract PetRockNFT is ERC721 {
     address private god;
-    address private wBtcAddr = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
-    IERC20 private wBTC = IERC20(wBtcAddr);
+    //address private wBtcAddr = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
+    //IERC20 private wBTC = IERC20(wBtcAddr);
+    IERC20 private wBTC;
     uint256 exchangeValue = 10**8;
 
     string private petrockTokenURI;
@@ -24,9 +25,10 @@ contract PetRockNFT is ERC721 {
         _;
     }
 
-    constructor() ERC721("PETROCK", "NFPR") {
+    constructor(IERC20 _token) ERC721("PETROCK", "NFPR") {
         god = _msgSender();
         petrockTokenURI = "";
+        wBTC = _token;
     }
 
     function mintNewPetRock(address _to, string memory _name, uint256 _amount) public {
