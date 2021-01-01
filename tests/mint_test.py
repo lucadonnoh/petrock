@@ -17,7 +17,6 @@ def test_mint(prf, exValue, web3):
     god = accounts[1]
     wBTC.functions.approve(prf.address, exValue).transact({'from': str(minter)})
     allowance = wBTC.functions.allowance(minter.address, web3.toChecksumAddress(prf.address)).call()
-    print(minter.address)
     assert allowance == exValue
     prf.mintNewPetRock(minter, "Fabio", 10**8).transact({'from': str(minter)})
     assert prf.totalSupply().call() == 1
