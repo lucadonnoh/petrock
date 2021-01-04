@@ -72,3 +72,27 @@ def test_mint_insufficientBalance(contracts, numTokens, exValue, web3):
     
     assert prf.totalSupply() == 0
 
+@given(allowance=strategy('uint256', min_value=0, max_value=10**8-1))
+def test_mint_insufficientAllowance(contracts, allowance, exValue, web3):
+    # contracts
+    prf = contracts[0]
+    wBTC = contracts[1]
+
+    # accounts
+    satoshi = accounts[5]
+    minter = accounts[0]
+    god = accounts[1]
+
+    # send wBTC to minter and check balance
+    numTokens = 10**8
+    wBTC.mint(minter, numTokens, {'from': satoshi})
+    balance = wBTC.balanceOf(minter)
+    print("minter balance    : ", balance)
+    assert balance == numTokens
+    wBTC.approve(prf.address, numTokens, {'from': str(minter)})
+
+    with brownie.reverts():
+        prf.mintNewPetRock(minter, "Reverto", 10**8)
+    
+    assert prf.totalSupply() == 0
+
