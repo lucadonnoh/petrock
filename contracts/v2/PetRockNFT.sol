@@ -33,9 +33,6 @@ contract PetRockNFT is ERC721 {
 
     function mintNewPetRock(address _to, string memory _name, uint256 _amount) public {
         require(_amount == exchangeValue, "You need to send 1 wBTC");
-        uint256 allowance = wBTC.allowance(_msgSender(), address(this));
-        require(allowance >= exchangeValue, "You need to check token allowance");
-        require(wBTC.balanceOf(_msgSender()) >= exchangeValue, "You don't have enough wBTC");
         wBTC.transferFrom(_msgSender(), god, _amount);
         uint256 _tokenId = totalSupply();
         super._mint(_to, _tokenId);
