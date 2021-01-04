@@ -67,7 +67,7 @@ def test_mint_insufficientBalance(contracts, numTokens, exValue, web3):
     assert balance == numTokens
     wBTC.approve(prf.address, numTokens, {'from': str(minter)})
 
-    with brownie.reverts("You need to send 1 wBTC"):
+    with brownie.reverts():
         prf.mintNewPetRock(minter, "Reverto", 10**8)
     
     assert prf.totalSupply() == 0
